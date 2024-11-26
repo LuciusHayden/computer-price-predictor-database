@@ -145,7 +145,7 @@ for _laptop in laptops:
 
 
     data = (company, simplify_cpu(laptop.cpu), extract_number(laptop.inches),
-                screen_resolution, int(extract_number(laptop.ram)), storage, storage_type,
+                format_resolution(screen_resolution), int(extract_number(laptop.ram)), storage, storage_type,
                 graphics, operating_system, float(extract_number(laptop.weight)), price)
 
     conn = mysql.connector.connect(
@@ -181,6 +181,6 @@ for _laptop in laptops:
     # print(data_frame)
 
     y_pred = model.predict(data_frame)
-    # print(f"Predicted Price: {y_pred * 1.06} - https://bestbuy.com{_laptop['href']}") # euros to usd
+    print(f"Predicted Price: {y_pred * 1.06} - https://bestbuy.com{_laptop['href']}") # euros to usd
 
 
