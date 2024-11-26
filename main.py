@@ -105,7 +105,9 @@ for _laptop in laptops:
     soup_ = bs(siteHtml, 'html.parser')
     details = soup_.find_all('script', {'type' : 'application/json'})
     data = json.loads(details[2].text)
-   
+
+    price = json.loads(details[4].text)['app']['data']['customerPrice']
+
     for category in data['specifications']['categories']:
         for spec in category["specifications"]:
         
@@ -136,28 +138,27 @@ for _laptop in laptops:
                     weight = spec_value
                 case _:
                     pass
-    
+
     print("\n")
 
     laptop = Laptop(company, cpu, inches, screen_resolution, ram, storage, storage_type, graphics, operating_system, weight)   
 
 
     data = (company, simplify_cpu(laptop.cpu), extract_number(laptop.inches),
-             screen_resolution, int(extract_number(laptop.ram)), storage, storage_type,
-               graphics, operating_system, float(extract_number(laptop.weight)))
+                screen_resolution, int(extract_number(laptop.ram)), storage, storage_type,
+                graphics, operating_system, float(extract_number(laptop.weight)), price)
 
     conn = mysql.connector.connect(
         host="localhost",      
         user="root",          
         database="computer_database",
-        # password=os.getenv("DB_PASSWORD")
         password=os.getenv("DB_PASSWORD")
     )
 
     cursor = conn.cursor()
 
     try:
-        query = "INSERT INTO laptops (company, cpu, inches, screen_resolution, ram, storage, storage_type, graphics, operating_system, weight) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO laptops (company, cpu, inches, screen_resolution, ram, storage, storage_type, graphics, operating_system, weight, price) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         cursor.execute(query, data)
 
     except mysql.connector.Error as err:

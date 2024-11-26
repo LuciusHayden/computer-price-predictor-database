@@ -57,6 +57,7 @@ def create_database():
                 graphics VARCHAR(50),
                 operating_system VARCHAR(50),
                 weight DECIMAL(5,2),
+                price DECIMAL(10,2),
                 UNIQUE (company, cpu, ram, storage, graphics, weight, inches)
             );
             """

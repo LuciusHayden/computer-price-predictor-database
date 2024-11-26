@@ -14,9 +14,8 @@ conn = mysql.connector.connect(
 cursor = conn.cursor()
 
 query = "SELECT * FROM laptops"
-
 data = pd.read_sql(query, con=conn)
 
-print(data.head())
-
 data.drop('id', axis=1, inplace=True)
+
+print(data.head())
