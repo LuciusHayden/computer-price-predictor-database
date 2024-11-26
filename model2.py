@@ -24,8 +24,7 @@ query = "SELECT * FROM laptops"
 data = pd.read_sql(query, con=conn)
 
 data.drop('id', axis=1, inplace=True)
-label = data['price']
-data.drop('price', axis=1, inplace=True)
+
 
 data['storage'] = data['storage'].str[:-9].astype(int)
 data[['width', 'height']] = data['screen_resolution'].str.split('x', expand=True).astype('int64')
@@ -41,6 +40,9 @@ scaler = MinMaxScaler()
 
 data[numerical_columns] = scaler.fit_transform(data[numerical_columns])
 
+label = data['price']
+data.drop('price', axis=1, inplace=True)
+
 columns_to_encode = ['cpu', 'storage_type', 'graphics', 'operating_system', 'company']
 
 encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
@@ -52,18 +54,22 @@ data = pd.concat([data, encoded_df], axis=1).drop(columns=columns_to_encode)
 print(data.head())
 
 model = keras.Sequential([
-    layers.Dense(64, activation='relu', input_shape=(data.shape[1],)),
+    layers.Dense(128, activation='relu', input_shape=(data.shape[1],)),
+    layers.Dense(64, activation='relu'),
     layers.Dense(32, activation='relu'),
     layers.Dense(1)
 ])
 
-model.compile(optimizer='adam', loss='mean_squared_error')
+model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
 
-history = model.fit(data, label, epochs=10, batch_size=2)
+history = model.fit(data, label, epochs=10, batch_size=32, validation_split=0.2)
 
-plt.plot(history.history['loss'])
-plt.title('Model loss')
-plt.ylabel('Loss')
+plt.plot(history.history['loss'], label='Training Loss')
+plt.plot(history.history['mae'], label='Training MAE')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.plot(history.history['val_mae'], label='Validation MAE')
+plt.title('Model Performance')
+plt.ylabel('Value')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train loss', 'Train MAE', 'Validation loss', 'Validation MAE'], loc='upper left')
 plt.show()
