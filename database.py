@@ -58,7 +58,7 @@ def create_database():
                 operating_system VARCHAR(50),
                 weight DECIMAL(5,2),
                 price DECIMAL(10,2),
-                UNIQUE (company, cpu, ram, storage, graphics, weight, inches)
+                UNIQUE (company, cpu, ram, storage, graphics, weight, inches, screen_resolution, operating_system, price)
             );
             """
             cursor.execute(create_table_query)
